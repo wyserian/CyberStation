@@ -1,26 +1,13 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="CyberStation - A comprehensive collection of cybersecurity tools and resources">
     <title>The CyberStation - Cybersecurity Tools Collection</title>
-    
-    <!-- Set dark theme immediately to avoid flash -->
-    <script>
-        const savedTheme = localStorage.getItem('cyberStationData');
-        if (savedTheme) {
-            try {
-                const data = JSON.parse(savedTheme);
-                if (data.darkMode === false) {
-                    document.documentElement.setAttribute('data-theme', 'light');
-                }
-            } catch (e) {}
-        }
-    </script>
-
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Dark-only: lets the browser paint the dark background before the stylesheet loads -->
+    <meta name="color-scheme" content="dark">
+    <meta name="theme-color" content="#090d15">
 
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -31,7 +18,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lobster+Two:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <!-- Skip to content for accessibility -->
@@ -40,7 +27,6 @@
     <!-- Loading Overlay with Shimmer -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="skeleton-container">
-            <div class="skeleton-header shimmer"></div>
             <div class="skeleton-search shimmer"></div>
             <div class="skeleton-filters shimmer"></div>
             <div class="skeleton-cards">
@@ -54,33 +40,18 @@
         </div>
     </div>
 
-    <!-- Toast Notification Container -->
-    <div id="toastContainer" class="toast-container"></div>
-
-    <!-- Header -->
-    <header class="navbar navbar-dark sticky-top">
+    <main>
         <div class="container-fluid">
-            <a class="navbar-brand head-title" href="/">CyberStation</a>
-            <div class="header-actions">
-                <button id="darkModeToggle" class="btn-icon" aria-label="Toggle dark mode" title="Toggle dark mode">
-                    <i class="bi bi-sun-fill"></i>
-                </button>
-                <button id="favoritesToggle" class="btn-icon" aria-label="View favorites" title="View favorites">
-                    <i class="bi bi-star"></i>
-                    <span id="favCount" class="fav-badge">0</span>
-                </button>
-                <button id="shareBtn" class="btn-icon" aria-label="Share" title="Share filtered results">
+            <!-- Toolbar: Share, GitHub -->
+            <div class="toolbar">
+                <button id="shareBtn" class="btn-toolbar" aria-label="Share" title="Share filtered results">
                     <i class="bi bi-share"></i>
                 </button>
-                <a href="https://github.com/patkarmandar/CyberStation" target="_blank" rel="noopener noreferrer" class="btn-icon" aria-label="View on GitHub" title="View on GitHub">
+                <a href="https://github.com/wyserian/CyberStation" target="_blank" rel="noopener noreferrer" class="btn-toolbar" aria-label="View on GitHub" title="View on GitHub">
                     <i class="bi bi-github"></i>
                 </a>
             </div>
-        </div>
-    </header>
 
-    <main>
-        <div class="container-fluid">
             <!-- Search Box with Autocomplete -->
             <div class="search-wrapper">
                 <div class="search-box">
@@ -90,14 +61,12 @@
                     <input 
                         type="text" 
                         id="search" 
-                        class="form-control" 
                         placeholder="Search tools by name or description..." 
                         aria-label="Search tools"
+                        aria-keyshortcuts="/"
                         autocomplete="off"
                     >
-                    <div class="keyboard-hint">
-                        <span class="hint-text">Press</span> <kbd>/</kbd> <span class="hint-text">to search</span>
-                    </div>
+                    <kbd class="keyboard-hint" title="Press / to search" aria-hidden="true">/</kbd>
                     <button id="clearSearch" class="btn-clear-search" aria-label="Clear search" style="display: none;">
                         <i class="bi bi-x-circle-fill"></i>
                     </button>
@@ -113,55 +82,6 @@
                 </button>
             </div>
 
-            <!-- Toolbar: Sort, View, Stats, Legend -->
-            <div class="toolbar">
-                <div class="sort-options">
-                    <label for="sortSelect" class="sort-label">Sort:</label>
-                    <select id="sortSelect" class="sort-select">
-                        <option value="name-asc">Name (A-Z)</option>
-                        <option value="name-desc">Name (Z-A)</option>
-                        <option value="favorites">Favorites</option>
-                    </select>
-                </div>
-                <div class="toolbar-right">
-                    <button id="viewToggle" class="btn-toolbar" title="Toggle view">
-                        <i class="bi bi-grid-3x3-gap-fill"></i>
-                    </button>
-                    <button id="legendToggle" class="btn-toolbar" title="Show legend">
-                        <i class="bi bi-info-circle"></i>
-                    </button>
-                    <button id="statsToggle" class="btn-toolbar" title="Statistics">
-                        <i class="bi bi-bar-chart"></i>
-                    </button>
-                    <button id="helpToggle" class="btn-toolbar" title="Keyboard shortcuts">
-                        <i class="bi bi-question-circle"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Legend Panel -->
-            <div id="legendPanel" class="legend-panel" style="display: none;">
-                <div class="legend-items">
-                    <div class="legend-item">
-                        <span class="legend-color" style="background: #3b82f6;"></span>
-                        <span>Techniques</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-color" style="background: #10b981;"></span>
-                        <span>Categories</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-color" style="background: #6b7280;"></span>
-                        <span>Targets</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Statistics Panel -->
-            <div id="statsPanel" class="stats-panel" style="display: none;">
-                <div class="stats-grid" id="statsGrid"></div>
-            </div>
-
             <!-- Filter Section -->
             <section id="filters" class="filter-box">
                 <!-- Filters will be generated dynamically -->
@@ -169,10 +89,7 @@
 
             <!-- Results Info -->
             <div class="results-info">
-                <span id="resultsCount" class="text-count" role="status" aria-live="polite">Showing <strong>0</strong> of 303 tools</span>
-                <button id="collapseFilters" class="btn btn-sm btn-outline-secondary d-md-none">
-                    <i class="bi bi-funnel"></i> Filters
-                </button>
+                <span id="resultsCount" role="status" aria-live="polite">Loading tools…</span>
             </div>
 
             <!-- Recently Viewed -->
@@ -184,22 +101,15 @@
             <!-- No Results Message -->
             <div id="noResults" class="no-results" style="display: none;">
                 <div class="empty-state">
-                    <svg class="empty-icon" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="100" cy="100" r="80" fill="none" stroke="currentColor" stroke-width="3" opacity="0.2"/>
-                        <path d="M70 85 Q100 65 130 85" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-                        <circle cx="75" cy="90" r="8" fill="currentColor" opacity="0.3"/>
-                        <circle cx="125" cy="90" r="8" fill="currentColor" opacity="0.3"/>
-                        <path d="M70 130 Q100 150 130 130" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity="0.3"/>
-                    </svg>
                     <h4>No tools found</h4>
                     <p>Try adjusting your search or filters</p>
-                    <button id="resetFromEmpty" class="btn btn-primary btn-sm">
+                    <button id="resetFromEmpty" class="btn-toolbar">
                         <i class="bi bi-arrow-clockwise"></i> Reset Filters
                     </button>
                 </div>
             </div>
 
-            <!-- List Section with Virtual Scrolling -->
+            <!-- Tool cards -->
             <section id="dataList" class="lists" role="list">
                 <!-- Tool cards will be rendered here -->
             </section>
@@ -208,57 +118,8 @@
             <button id="backToTop" class="btn-back-to-top" aria-label="Back to top">
                 <i class="bi bi-arrow-up"></i>
             </button>
-
-            <!-- Floating Action Button (Mobile) -->
-            <button id="fabFilter" class="fab-filter d-md-none" aria-label="Open filters">
-                <i class="bi bi-funnel-fill"></i>
-            </button>
         </div>
     </main>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container-fluid">
-            <div class="footer-content">
-                <span class="footer-text">Project by 
-                    <a href="https://github.com/patkarmandar" target="_blank" rel="noopener noreferrer">Mandar</a>
-                </span>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Keyboard Shortcuts Help Modal -->
-    <div id="shortcutsModal" class="shortcuts-modal" style="display: none;">
-        <div class="shortcuts-content">
-            <h5>Keyboard Shortcuts</h5>
-            <div class="shortcut-list">
-                <div class="shortcut-item">
-                    <kbd>/</kbd>
-                    <span>Focus search</span>
-                </div>
-                <div class="shortcut-item">
-                    <kbd>Esc</kbd>
-                    <span>Clear search / Close</span>
-                </div>
-                <div class="shortcut-item">
-                    <kbd>?</kbd>
-                    <span>Show this help</span>
-                </div>
-                <div class="shortcut-item">
-                    <kbd>D</kbd>
-                    <span>Toggle dark mode</span>
-                </div>
-                <div class="shortcut-item">
-                    <kbd>V</kbd>
-                    <span>Toggle view mode</span>
-                </div>
-            </div>
-            <button class="btn-close-modal" onclick="document.getElementById('shortcutsModal').style.display='none'">Close</button>
-        </div>
-    </div>
-
-    <!-- Bootstrap JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
     <!-- Custom JS -->
     <script src="js/script.min.js"></script>
